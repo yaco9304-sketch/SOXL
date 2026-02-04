@@ -1,0 +1,30 @@
+name: Daily SOXL Alert
+
+on:
+  schedule:
+    # 매일 11:00 UTC = 20:00 KST
+    - cron: '0 11 * * *'
+  workflow_dispatch: # 수동 실행 가능
+
+jobs:
+  send-alert:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Daily Alert
+        run: |
+          response=$(curl -s -w "\n%{http_code}" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.APP_URL }}/api/cron/daily-alert")
+
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+
+          echo "Response: $body"
+          echo "HTTP Code: $http_code"
+
+          if [ "$http_code" != "200" ]; then
+            echo "Failed to send daily alert"
+            exit 1
+          fi
+
+          echo "Daily alert sent successfully!"

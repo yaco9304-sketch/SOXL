@@ -1,0 +1,227 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 나눔고딕 폰트 설정 */
+@font-face {
+  font-family: 'NanumGothic';
+  src: url('/fonts/NanumGothicLight.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NanumGothic';
+  src: url('/fonts/NanumGothic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NanumGothic';
+  src: url('/fonts/NanumGothicBold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NanumGothic';
+  src: url('/fonts/NanumGothicExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Investing.com 스타일 다크 테마 */
+:root {
+  /* 배경 색상 - 매우 어두운 톤 */
+  --color-bg-primary: #0d1117;
+  --color-bg-secondary: #161b22;
+  --color-bg-card: #1c2128;
+  --color-bg-hover: #21262d;
+  
+  /* 텍스트 색상 */
+  --color-text-primary: #e6edf3;
+  --color-text-secondary: #9198a1;
+  --color-text-muted: #6e7681;
+  
+  /* 보더 */
+  --color-border: #30363d;
+  --color-border-subtle: #21262d;
+  
+  /* 상승 (빨강) */
+  --color-up: #ff4757;
+  --color-up-bg: rgba(255, 71, 87, 0.1);
+  
+  /* 하락 (파랑) */
+  --color-down: #3742fa;
+  --color-down-bg: rgba(55, 66, 250, 0.1);
+  
+  /* 중립 */
+  --color-neutral: #9198a1;
+  
+  /* 액센트 (포인트 컬러) */
+  --color-accent: #58a6ff;
+  --color-accent-hover: #79b8ff;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'NanumGothic', -apple-system, BlinkMacSystemFont, 'Segoe UI', 
+               'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  color: var(--color-text-primary);
+  background: var(--color-bg-primary);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 숫자 폰트 (모노스페이스) */
+.number-font {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* 스크롤바 스타일 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out;
+}
+
+/* 포커스 스타일 */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* 버튼 기본 스타일 */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 입력 필드 기본 스타일 */
+input,
+select,
+textarea {
+  font-family: inherit;
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: var(--color-text-muted);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--color-accent);
+  background-color: var(--color-bg-card);
+}
+
+/* 카드 스타일 */
+.card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--color-border-subtle);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* 상승/하락 텍스트 */
+.text-up {
+  color: var(--color-up) !important;
+}
+
+.text-down {
+  color: var(--color-down) !important;
+}
+
+.bg-up {
+  background-color: var(--color-up-bg) !important;
+}
+
+.bg-down {
+  background-color: var(--color-down-bg) !important;
+}
