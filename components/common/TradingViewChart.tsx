@@ -60,7 +60,7 @@ export function TradingViewChart({ symbol, height = 400 }: TradingViewChartProps
           show_popup_button: false,
           popup_width: '1000',
           popup_height: '650',
-          container_id: containerRef.current.id,
+          container_id: containerId,
           backgroundColor: '#0d1117',
           gridColor: '#1c2128',
           hide_top_toolbar: false,
@@ -76,7 +76,7 @@ export function TradingViewChart({ symbol, height = 400 }: TradingViewChartProps
         script.parentNode.removeChild(script);
       }
     };
-  }, [symbol, height]);
+  }, [symbol, height, containerId]);
 
   return (
     <div className="bg-bg-card rounded-lg border border-border overflow-hidden">

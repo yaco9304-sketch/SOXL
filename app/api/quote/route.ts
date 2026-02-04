@@ -9,13 +9,13 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const symbol = searchParams.get('symbol') || 'SOXL';
 
-    // Yahoo Finance API 호출
+    // Yahoo Finance API 호출 (캐시 비활성화로 실시간 데이터 보장)
     const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`;
     const response = await fetch(yahooUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
       },
-      next: { revalidate: 60 }, // 1분 캐시
+      cache: 'no-store', // 캐시 비활성화
     });
 
     if (!response.ok) {
