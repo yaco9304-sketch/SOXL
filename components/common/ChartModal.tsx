@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useEffect, useRef, useId } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SupportedSymbol } from '@/types';
 import { X } from 'lucide-react';
 
@@ -22,71 +22,95 @@ declare global {
   }
 }
 
+// 스크립트 로드 상태 관리
+let scriptLoaded = false;
+let scriptLoading = false;
+const loadCallbacks: (() => void)[] = [];
+
+function loadTradingViewScript(callback: () => void) {
+  if (scriptLoaded) {
+    callback();
+    return;
+  }
+
+  loadCallbacks.push(callback);
+
+  if (scriptLoading) {
+    return;
+  }
+
+  scriptLoading = true;
+  const script = document.createElement('script');
+  script.src = 'https://s3.tradingview.com/tv.js';
+  script.async = true;
+  script.onload = () => {
+    scriptLoaded = true;
+    scriptLoading = false;
+    loadCallbacks.forEach(cb => cb());
+    loadCallbacks.length = 0;
+  };
+  script.onerror = () => {
+    scriptLoading = false;
+    console.error('Failed to load TradingView script');
+  };
+  document.head.appendChild(script);
+}
+
 export function ChartModal({ symbol, isOpen, onClose }: ChartModalProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const uniqueId = useId();
-  const containerId = `tradingview_modal_${symbol}_${uniqueId.replace(/:/g, '_')}`;
+  const [containerId] = useState(() => `tv_modal_${symbol}_${Math.random().toString(36).substr(2, 9)}`);
+  const widgetCreated = useRef(false);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      widgetCreated.current = false;
+      return;
+    }
 
-    // TradingView 스크립트 로드
-    const script = document.createElement('script');
-    script.src = 'https://s3.tradingview.com/tv.js';
-    script.async = true;
-    script.onload = () => {
-      if (containerRef.current && window.TradingView) {
-        // 심볼별 거래소 매핑 (TradingView 인식용: SOXL/UPRO=NYSEARCA, TQQQ=NASDAQ)
-        const getSymbolWithExchange = (sym: string) => {
-          switch (sym) {
-            case 'SOXL':
-            case 'UPRO':
-              return `NYSEARCA:${sym}`;
-            case 'TQQQ':
-              return `NASDAQ:${sym}`;
-            default:
-              return `NASDAQ:${sym}`;
-          }
-        };
+    if (widgetCreated.current) return;
 
-        new window.TradingView.widget({
-          autosize: true,
-          symbol: getSymbolWithExchange(symbol),
-          interval: 'D',
-          timezone: 'America/New_York',
-          theme: 'dark',
-          style: '1',
-          locale: 'kr',
-          toolbar_bg: '#0d1117',
-          enable_publishing: false,
-          hide_side_toolbar: false,
-          allow_symbol_change: false,
-          details: true,
-          hotlist: false,
-          calendar: false,
-          studies: [
-            'MASimple@tv-basicstudies',
-            'RSI@tv-basicstudies',
-          ],
-          show_popup_button: false,
-          popup_width: '1000',
-          popup_height: '650',
-          container_id: containerId,
-          backgroundColor: '#0d1117',
-          gridColor: '#1c2128',
-          hide_top_toolbar: false,
-          hide_legend: false,
-          save_image: false,
-        });
-      }
-    };
-    document.head.appendChild(script);
+    loadTradingViewScript(() => {
+      if (!containerRef.current || !window.TradingView || widgetCreated.current) return;
 
-    return () => {
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
-    };
+      // 컨테이너 초기화
+      containerRef.current.innerHTML = '';
+
+      const getSymbolWithExchange = (sym: string) => {
+        switch (sym) {
+          case 'SOXL':
+          case 'UPRO':
+            return `AMEX:${sym}`;
+          case 'TQQQ':
+            return `NASDAQ:${sym}`;
+          default:
+            return `NASDAQ:${sym}`;
+        }
+      };
+
+      new window.TradingView.widget({
+        autosize: true,
+        symbol: getSymbolWithExchange(symbol),
+        interval: 'D',
+        timezone: 'America/New_York',
+        theme: 'dark',
+        style: '1',
+        locale: 'kr',
+        toolbar_bg: '#0d1117',
+        enable_publishing: false,
+        hide_side_toolbar: false,
+        allow_symbol_change: false,
+        details: true,
+        hotlist: false,
+        calendar: false,
+        studies: ['MASimple@tv-basicstudies', 'RSI@tv-basicstudies'],
+        show_popup_button: false,
+        container_id: containerId,
+        backgroundColor: '#0d1117',
+        gridColor: '#1c2128',
+      });
+
+      widgetCreated.current = true;
+    });
   }, [symbol, isOpen, containerId]);
 
   // ESC 키로 모달 닫기
@@ -107,11 +131,11 @@ export function ChartModal({ symbol, isOpen, onClose }: ChartModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 animate-in fade-in duration-200"
       onClick={onClose}
     >
-      <div 
+      <div
         className="relative w-full max-w-6xl h-[80vh] bg-bg-card rounded-lg border border-border overflow-hidden animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >

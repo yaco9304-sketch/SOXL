@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build)",
+      "Bash(git add:*)",
+      "Bash(git config:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: 전일 종가 기준 매수가 알림 시스템 추가\n\n- 표준편차 매매법 기준가 계산 로직 추가 \\(lib/strategy/rules.ts\\)\n  - buy_7 = prevClose * 0.93 \\(-7%\\)\n  - buy_14 = prevClose * 0.86 \\(-14%\\)\n\n- PriceCard UI에 매수 기준가 표시 추가\n  - 전일 종가 기준 -7%, -14% 매수가 표시\n  - 매수 조건 충족 시 하이라이트\n\n- GitHub Actions Cron 설정 \\(매일 20:00 KST\\)\n  - .github/workflows/daily-alert.yml\n  - /api/cron/daily-alert API 라우트\n\n- 알림 상태 컴포넌트 추가\n  - NotificationStatus.tsx\n  - 구독 상태 ON/OFF 표시\n  - 마지막 발송 시각 표시\n\n- 푸시 알림 템플릿 개선\n  - 전일 종가, -7% 매수가, -14% 매수가 형식\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git remote add:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(winget install:*)",
+      "Bash(gh auth:*)",
+      "Bash(\"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\" auth status)",
+      "Bash(\"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\" workflow run daily-alert.yml --repo yaco9304-sketch/SOXL)",
+      "Bash(\"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\" run list --repo yaco9304-sketch/SOXL --limit 1)",
+      "Bash(\"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\" run view 21663706829 --repo yaco9304-sketch/SOXL --log)",
+      "Bash(vercel:*)",
+      "Bash(\"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\" run view 21663814156 --repo yaco9304-sketch/SOXL --log)",
+      "Bash(npm run dev:*)",
+      "Bash(timeout:*)",
+      "Bash(git commit:*)",
+      "Bash(npx vercel --prod)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(node -e:*)",
+      "WebFetch(domain:soxl.vercel.app)"
+    ]
+  }
+}
