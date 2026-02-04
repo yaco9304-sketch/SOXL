@@ -31,7 +31,8 @@ export async function GET(request: NextRequest) {
 
     const meta = result.meta;
     const currentPrice = meta.regularMarketPrice || meta.previousClose;
-    const previousClose = meta.chartPreviousClose || meta.previousClose;
+    // regularMarketPreviousClose가 가장 정확한 전일 종가
+    const previousClose = meta.regularMarketPreviousClose || meta.previousClose;
     const changePercent = ((currentPrice - previousClose) / previousClose) * 100;
 
     // DailyMarketState 형식으로 반환

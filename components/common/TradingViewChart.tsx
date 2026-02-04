@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useId } from 'react';
 import { SupportedSymbol } from '@/types';
 
 interface TradingViewChartProps {
@@ -22,6 +22,8 @@ declare global {
 
 export function TradingViewChart({ symbol, height = 400 }: TradingViewChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const uniqueId = useId();
+  const containerId = `tradingview_${symbol}_${uniqueId.replace(/:/g, '_')}`;
 
   useEffect(() => {
     // TradingView 스크립트 로드
@@ -87,7 +89,7 @@ export function TradingViewChart({ symbol, height = 400 }: TradingViewChartProps
         </h3>
       </div>
       <div
-        id={`tradingview_${symbol}_${Date.now()}`}
+        id={containerId}
         ref={containerRef}
         className="tradingview-widget-container"
       />

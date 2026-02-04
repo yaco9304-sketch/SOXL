@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useId } from 'react';
 import { SupportedSymbol } from '@/types';
 import { X } from 'lucide-react';
 
@@ -24,6 +24,8 @@ declare global {
 
 export function ChartModal({ symbol, isOpen, onClose }: ChartModalProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const uniqueId = useId();
+  const containerId = `tradingview_modal_${symbol}_${uniqueId.replace(/:/g, '_')}`;
 
   useEffect(() => {
     if (!isOpen) return;
@@ -130,7 +132,7 @@ export function ChartModal({ symbol, isOpen, onClose }: ChartModalProps) {
         {/* 차트 컨테이너 */}
         <div className="w-full h-full pt-16">
           <div
-            id={`tradingview_modal_${symbol}_${Date.now()}`}
+            id={containerId}
             ref={containerRef}
             className="w-full h-full"
           />

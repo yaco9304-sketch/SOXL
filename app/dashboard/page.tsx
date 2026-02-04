@@ -31,6 +31,8 @@ import {
   setActiveSymbol,
 } from '@/lib/storage';
 import { getTodayString } from '@/lib/utils/date';
+import { sendBuyConditionAlert, getNotificationPermission } from '@/lib/utils/notification';
+import { calculateStdDevBuyPrices, checkBuyConditionByPrice } from '@/lib/strategy/rules';
 import { SymbolSelector } from '@/components/common/SymbolSelector';
 
 export default function Dashboard() {
@@ -153,6 +155,21 @@ export default function Dashboard() {
           executed: false, // 사용자가 직접 실행 여부 표시
         };
         addTradeEvent(newEvent);
+      }
+
+      // 7. 장중 매수 조건 알림 (알림 권한이 있을 경우)
+      if (getNotificationPermission() === 'granted') {
+        const buyPrices = calculateStdDevBuyPrices(marketData.prevClose);
+        const buyCondition = checkBuyConditionByPrice(marketData.currentPrice, buyPrices);
+
+        if (buyCondition.shouldBuy && (buyCondition.level === 'buy7' || buyCondition.level === 'buy14')) {
+          await sendBuyConditionAlert(
+            targetSymbol,
+            marketData.currentPrice,
+            marketData.prevClose,
+            buyCondition.level
+          );
+        }
       }
     } catch (err) {
       console.error('Error loading dashboard:', err);

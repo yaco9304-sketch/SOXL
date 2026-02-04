@@ -22,7 +22,26 @@ export function NotificationStatus({ onSubscriptionChange }: NotificationStatusP
     // 권한 상태 확인
     const currentPermission = getNotificationPermission();
     setPermission(currentPermission);
-    setIsSubscribed(currentPermission === 'granted');
+
+    // 실제 푸시 구독 상태 확인
+    const checkSubscription = async () => {
+      if (currentPermission === 'granted' && 'serviceWorker' in navigator) {
+        try {
+          const registration = await navigator.serviceWorker.getRegistration();
+          if (registration) {
+            const subscription = await registration.pushManager.getSubscription();
+            setIsSubscribed(!!subscription);
+          } else {
+            setIsSubscribed(false);
+          }
+        } catch {
+          setIsSubscribed(false);
+        }
+      } else {
+        setIsSubscribed(false);
+      }
+    };
+    checkSubscription();
 
     // 마지막 알림 시각 로드 (localStorage)
     const storedLastAlert = localStorage.getItem('soxl_last_alert_time');

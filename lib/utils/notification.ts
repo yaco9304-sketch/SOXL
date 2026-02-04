@@ -163,6 +163,56 @@ export async function requestDailyAlert(): Promise<{
 }
 
 /**
+ * 장중 매수 조건 달성 시 알림
+ */
+export async function sendBuyConditionAlert(
+  symbol: string,
+  currentPrice: number,
+  prevClose: number,
+  level: 'buy7' | 'buy14'
+): Promise<void> {
+  const permission = getNotificationPermission();
+  if (permission !== 'granted') {
+    return;
+  }
+
+  const registration = await navigator.serviceWorker.getRegistration();
+  if (!registration) {
+    return;
+  }
+
+  // 오늘 이미 이 조건으로 알림을 보냈는지 확인
+  const today = new Date().toISOString().split('T')[0];
+  const alertKey = `soxl_${level}_alert_${today}`;
+  const alreadySent = localStorage.getItem(alertKey);
+  if (alreadySent) {
+    return;
+  }
+
+  const changePct = ((currentPrice - prevClose) / prevClose * 100).toFixed(1);
+  const targetPrice = level === 'buy7'
+    ? (prevClose * 0.93).toFixed(2)
+    : (prevClose * 0.86).toFixed(2);
+
+  const title = level === 'buy14'
+    ? `🚨 [${symbol}] -14% 급락 도달!`
+    : `⚠️ [${symbol}] -7% 하락 도달!`;
+
+  const body = `현재가: $${currentPrice.toFixed(2)} (${changePct}%)\n기준가: $${targetPrice}\n매수 조건 충족!`;
+
+  await registration.showNotification(title, {
+    body,
+    icon: '/icon-192.png',
+    badge: '/icon-192.png',
+    tag: `soxl-${level}-alert`,
+    requireInteraction: true,
+  });
+
+  // 알림 전송 기록
+  localStorage.setItem(alertKey, new Date().toISOString());
+}
+
+/**
  * Base64 문자열을 Uint8Array로 변환
  */
 function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
