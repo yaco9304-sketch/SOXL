@@ -16,6 +16,7 @@ import type {
   ChecklistItem,
 } from '@/types';
 import { getTodayString, getDaysDifference } from '@/lib/utils/date';
+import { calculateExpectedAveragePrice } from '@/lib/utils/averagePrice';
 
 // ========================================
 // Constants
@@ -206,7 +207,7 @@ export function checkStopConditions(
 
 /**
  * 매수 조건 체크
- * 
+ *
  * 예산은 원화(KRW) 기준으로 계산하고, 환율을 적용하여 USD로 변환합니다.
  */
 export function checkBuyConditions(
@@ -216,11 +217,26 @@ export function checkBuyConditions(
 ): TodayAction {
   const { changePct, currentPrice } = market;
 
+  // 현재 평단가 및 보유 주식 수
+  const currentAveragePrice = config.averageCost || 0;
+  const currentShares = config.totalShares || 0;
+
   // 과매수 조건
   if (changePct <= THRESHOLDS.OVERBUY) {
     const buyAmountKRW = config.totalBudget * config.buyRatioOver; // 원화 기준
     const buyAmount = buyAmountKRW / exchangeRate; // USD로 변환
     const buyShares = Math.floor(buyAmount / currentPrice);
+
+    // 예상 평단가 계산
+    const expectedAveragePrice =
+      buyShares > 0
+        ? calculateExpectedAveragePrice(
+            currentAveragePrice,
+            currentShares,
+            currentPrice,
+            buyShares
+          )
+        : currentAveragePrice;
 
     return {
       action: 'OVERBUY',
@@ -228,6 +244,9 @@ export function checkBuyConditions(
       buyAmount,
       buyAmountKRW,
       buyShares,
+      buyPrice: currentPrice,
+      expectedAveragePrice,
+      currentAveragePrice,
       exchangeRate,
     };
   }
@@ -238,12 +257,26 @@ export function checkBuyConditions(
     const buyAmount = buyAmountKRW / exchangeRate; // USD로 변환
     const buyShares = Math.floor(buyAmount / currentPrice);
 
+    // 예상 평단가 계산
+    const expectedAveragePrice =
+      buyShares > 0
+        ? calculateExpectedAveragePrice(
+            currentAveragePrice,
+            currentShares,
+            currentPrice,
+            buyShares
+          )
+        : currentAveragePrice;
+
     return {
       action: 'BUY',
       reason: `전일 대비 ${changePct.toFixed(1)}% 하락 - 정규 매수 신호`,
       buyAmount,
       buyAmountKRW,
       buyShares,
+      buyPrice: currentPrice,
+      expectedAveragePrice,
+      currentAveragePrice,
       exchangeRate,
     };
   }

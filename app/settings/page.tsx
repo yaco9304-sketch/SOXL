@@ -295,45 +295,45 @@ export default function SettingsPage() {
             </div>
           </section>
 
-          {/* 보유 정보 (선택 사항) */}
-          <section className="bg-bg-card p-6 rounded-lg border border-border">
-            <h2 className="text-xl font-semibold mb-4 text-text-primary">
-              📊 보유 정보 (선택)
-            </h2>
+          {/* 보유 정보 (자동 계산) */}
+          <section className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 p-6 rounded-lg border-l-4 border-blue-500">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-text-primary">
+                📊 보유 정보
+              </h2>
+              <span className="text-xs px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full font-semibold">
+                자동 계산
+              </span>
+            </div>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm text-text-secondary mb-2">
                   평균 단가 (USD)
                 </label>
-                <input
-                  type="number"
-                  value={config.averageCost || ''}
-                  onChange={(e) =>
-                    handleChange(
-                      'averageCost',
-                      e.target.value ? parseFloat(e.target.value) : undefined
-                    )
-                  }
-                  className="w-full px-4 py-3 rounded-lg number-font text-lg"
-                  placeholder="비워두면 매도 판정 미사용"
-                />
+                <div className="w-full px-4 py-3 rounded-lg bg-bg-secondary border border-border number-font text-lg text-text-primary font-bold">
+                  {config.averageCost ? `$${config.averageCost.toFixed(2)}` : '거래 이력 없음'}
+                </div>
+                <p className="text-xs text-blue-400 mt-2 flex items-center gap-1">
+                  <span>💡</span>
+                  <span>거래 이력을 기반으로 자동 계산됩니다</span>
+                </p>
               </div>
               <div>
                 <label className="block text-sm text-text-secondary mb-2">
                   보유 주식 수
                 </label>
-                <input
-                  type="number"
-                  value={config.totalShares || ''}
-                  onChange={(e) =>
-                    handleChange(
-                      'totalShares',
-                      e.target.value ? parseFloat(e.target.value) : undefined
-                    )
-                  }
-                  className="w-full px-4 py-3 rounded-lg number-font text-lg"
-                  placeholder="비워두면 매도 주 수 미표시"
-                />
+                <div className="w-full px-4 py-3 rounded-lg bg-bg-secondary border border-border number-font text-lg text-text-primary font-bold">
+                  {config.totalShares ? `${config.totalShares.toLocaleString()}주` : '거래 이력 없음'}
+                </div>
+                <p className="text-xs text-blue-400 mt-2 flex items-center gap-1">
+                  <span>💡</span>
+                  <span>매수/매도 시 자동으로 업데이트됩니다</span>
+                </p>
+              </div>
+              <div className="mt-4 p-4 bg-bg-secondary/50 rounded-lg border border-border">
+                <p className="text-sm text-text-secondary leading-relaxed">
+                  <span className="font-semibold text-text-primary">📝 참고:</span> 평단가와 보유 주식 수는 히스토리 페이지에서 거래를 입력하면 자동으로 계산됩니다. 매수/매도 거래를 추가할 때마다 실시간으로 업데이트됩니다.
+                </p>
               </div>
             </div>
           </section>

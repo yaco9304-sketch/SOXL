@@ -13,6 +13,7 @@ import type {
 } from '@/types';
 import { STORAGE_KEYS } from '@/types';
 import { DEFAULT_SYMBOL } from '@/lib/constants/symbols';
+import { calculateAveragePrice } from '@/lib/utils/averagePrice';
 
 // ========================================
 // Default Values
@@ -172,6 +173,9 @@ export function setTradeHistory(history: TradeEvent[]): void {
 export function addTradeEvent(event: TradeEvent): void {
   const history = getTradeHistory();
   setTradeHistory([event, ...history]); // 최신순 정렬
+
+  // 평단가 자동 업데이트
+  updateAveragePriceFromHistory(event.symbol as SupportedSymbol);
 }
 
 export function updateTradeEvent(id: string, updates: Partial<TradeEvent>): void {
@@ -180,12 +184,38 @@ export function updateTradeEvent(id: string, updates: Partial<TradeEvent>): void
     event.id === id ? { ...event, ...updates } : event
   );
   setTradeHistory(updated);
+
+  // 평단가 자동 업데이트 (업데이트된 이벤트의 심볼)
+  const updatedEvent = updated.find((e) => e.id === id);
+  if (updatedEvent) {
+    updateAveragePriceFromHistory(updatedEvent.symbol as SupportedSymbol);
+  }
 }
 
 export function deleteTradeEvent(id: string): void {
   const history = getTradeHistory();
+  const deletedEvent = history.find((e) => e.id === id);
   const filtered = history.filter((event) => event.id !== id);
   setTradeHistory(filtered);
+
+  // 평단가 자동 업데이트
+  if (deletedEvent) {
+    updateAveragePriceFromHistory(deletedEvent.symbol as SupportedSymbol);
+  }
+}
+
+/**
+ * 거래 이력을 기반으로 평단가 자동 업데이트
+ */
+function updateAveragePriceFromHistory(symbol: SupportedSymbol): void {
+  const history = getTradeHistory();
+  const result = calculateAveragePrice(history, symbol);
+
+  // 해당 심볼의 설정에 평단가와 총 주식 수 업데이트
+  updateSymbolConfig(symbol, {
+    averageCost: result.averagePrice > 0 ? result.averagePrice : undefined,
+    totalShares: result.totalShares > 0 ? result.totalShares : undefined,
+  });
 }
 
 // ========================================

@@ -19,6 +19,7 @@ import { ActionCard } from '@/components/dashboard/ActionCard';
 import { BudgetBar } from '@/components/dashboard/BudgetBar';
 import { Checklist } from '@/components/dashboard/Checklist';
 import { NotificationStatus } from '@/components/dashboard/NotificationStatus';
+import { EntryGuide } from '@/components/dashboard/EntryGuide';
 import {
   getUserConfig,
   getDropTracker,
@@ -286,12 +287,19 @@ export default function Dashboard() {
                 </div>
               )}
 
+              {/* 진입 가이드 */}
+              {exchangeRate && (
+                <div className="animate-in slide-in-from-right duration-700" style={{ animationDelay: '50ms' }}>
+                  <EntryGuide market={market} config={config} exchangeRate={exchangeRate.rate} />
+                </div>
+              )}
+
               {/* 알림 상태 */}
-              <div className="animate-in slide-in-from-right duration-700" style={{ animationDelay: '50ms' }}>
+              <div className="animate-in slide-in-from-right duration-700" style={{ animationDelay: '100ms' }}>
                 <NotificationStatus />
               </div>
-              
-              <div className="animate-in slide-in-from-right duration-700" style={{ animationDelay: '100ms' }}>
+
+              <div className="animate-in slide-in-from-right duration-700" style={{ animationDelay: '150ms' }}>
                 <BudgetBar config={config} exchangeRate={exchangeRate?.rate || 1350} />
               </div>
               

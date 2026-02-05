@@ -99,6 +99,9 @@ export interface TodayAction {
   buyAmount?: number; // 매수 금액 (USD)
   buyAmountKRW?: number; // 매수 금액 (KRW) - 주 표시 금액
   buyShares?: number; // 매수 주 수
+  buyPrice?: number; // 매수 예정 가격 (현재가)
+  expectedAveragePrice?: number; // 예상 평단가 (매수 후)
+  currentAveragePrice?: number; // 현재 평단가
   sellRatio?: number; // 매도 비율
   sellShares?: number; // 매도 주 수
   exchangeRate?: number; // 적용된 환율

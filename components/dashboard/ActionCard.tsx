@@ -115,8 +115,8 @@ export function ActionCard({ action }: ActionCardProps) {
         {(action.action === 'BUY' || action.action === 'OVERBUY') &&
           action.buyAmount && (
             <div className={`space-y-3 p-5 rounded-xl ${
-              action.action === 'OVERBUY' 
-                ? 'bg-gradient-to-r from-orange-500/20 to-orange-500/10 border border-orange-500/30' 
+              action.action === 'OVERBUY'
+                ? 'bg-gradient-to-r from-orange-500/20 to-orange-500/10 border border-orange-500/30'
                 : 'bg-gradient-to-r from-warning/20 to-warning/10 border border-warning/30'
             }`}>
               <div className="flex justify-between items-center group">
@@ -147,6 +147,54 @@ export function ActionCard({ action }: ActionCardProps) {
                   </span>
                 </div>
               )}
+
+              {/* 평단가 정보 */}
+              {action.expectedAveragePrice && action.expectedAveragePrice > 0 && (
+                <>
+                  <div className="mt-3 pt-3 border-t border-neutral/20" />
+                  {action.currentAveragePrice && action.currentAveragePrice > 0 ? (
+                    <>
+                      <div className="flex justify-between items-center group">
+                        <span className="text-text-secondary font-medium">📌 현재 평단가</span>
+                        <span className="text-lg font-bold number-font text-blue-400 transition-transform group-hover:scale-110">
+                          {formatUSD(action.currentAveragePrice)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center group">
+                        <span className="text-text-secondary font-medium">🎯 예상 평단가</span>
+                        <span className={`text-lg font-bold number-font ${
+                          action.action === 'OVERBUY' ? 'text-orange-300' : 'text-yellow-300'
+                        } transition-transform group-hover:scale-110`}>
+                          {formatUSD(action.expectedAveragePrice)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-text-secondary text-sm">평단가 변화</span>
+                        <span className={`text-sm font-semibold number-font ${
+                          action.expectedAveragePrice < action.currentAveragePrice
+                            ? 'text-green-400'
+                            : 'text-red-400'
+                        }`}>
+                          {action.expectedAveragePrice < action.currentAveragePrice ? '↓' : '↑'}{' '}
+                          {formatUSD(Math.abs(action.expectedAveragePrice - action.currentAveragePrice))}
+                          {' '}
+                          ({((action.expectedAveragePrice - action.currentAveragePrice) / action.currentAveragePrice * 100).toFixed(2)}%)
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex justify-between items-center group">
+                      <span className="text-text-secondary font-medium">🎯 매수 후 평단가</span>
+                      <span className={`text-lg font-bold number-font ${
+                        action.action === 'OVERBUY' ? 'text-orange-300' : 'text-yellow-300'
+                      } transition-transform group-hover:scale-110`}>
+                        {formatUSD(action.expectedAveragePrice)}
+                      </span>
+                    </div>
+                  )}
+                </>
+              )}
+
               {action.action === 'OVERBUY' && (
                 <div className="mt-3 pt-3 border-t border-orange-500/30">
                   <p className="text-sm text-orange-400 font-semibold text-center animate-pulse">
